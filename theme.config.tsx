@@ -9,7 +9,7 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://discord.com',
   },
-  docsRepositoryBase: 'https://github.com/StanzaSystems/stanza-docs',
+  docsRepositoryBase: 'https://github.com/StanzaSystems/stanza-docs/blob/main',
   footer: {
     text: 'Stanza Docs',
   },

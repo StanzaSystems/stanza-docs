@@ -1,22 +1,22 @@
 {
-  "name": "nextra-docs-template",
+  "name": "stanza docs",
   "version": "0.0.1",
-  "description": "Nextra docs template",
+  "description": "Stanza documentation",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3007",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 3007"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shuding/nextra-docs-template.git"
+    "url": "git+https://github.com/StanzaSystems/stanza-docs.git"
   },
-  "author": "Shu Ding <g@shud.in>",
+  "author": "Stanza",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/shuding/nextra-docs-template/issues"
+    "url": "https://github.com/StanzaSystems/stanza-docs/issues"
   },
-  "homepage": "https://github.com/shuding/nextra-docs-template#readme",
+  "homepage": "https://github.com/StanzaSystems/stanza-docs/issues#readme",
   "dependencies": {
     "next": "^13.0.6",
     "nextra": "latest",

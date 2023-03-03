@@ -3,16 +3,19 @@
 ## General
 
 ### Feature
-A feature of your software - like 'product search', 'checkout' or 'settings'
+A capability of software, and it's constituent traffic flow through backend services  - like 'product search', 'checkout' or 'settings'
 
 ### Priority
 An assigned number from 0-10 that defines the priority of a feature. Priority 0 features are highest prioirty, and priority 10 features are lowest. Features not assigned a prioirty are defaulted to 5.
 
 ### Service
-Code that you maintain that is in a separate binary/runs independant of other code. Typically a 'Micro-service' in industry.
+A piece of software that you operate or control, that is in a separate binary/runs independent of other code. Typically a 'Micro-service' in industry. A service owns one or many decorators.
 
 ### Third-Party Service
-A service your code calls, but that you do not maintain the code for. Examples are Stripe, RDS, GitHub, Firebase.
+A service your code calls, but that you do not maintain the code for or operate. Examples are Stripe, RDS, GitHub, Firebase. A third-party service cannot own decorators, but it may have calling decorators.
+
+### Guarded Service
+A service that Stanza is managing traffic inbound traffic to using decorators, either in the service itself, or in the service's callers.
 
 ### Environment
 An environment of servers/deployments you maintain, either for production or for testing. 'dev', 'qa', 'prod', etc.
@@ -22,13 +25,28 @@ Projects are simple grouping buckets to make things easy to search for and assig
 
 ## Back-End
 
-### Decorator
+### Server SDK
+The Stanza traffic flow control and telemetry SDK primarily for application and server development in common systems languages such as java, golang, python, or node.
 
-### Token Bucket
+### Decorator
+A Stanza library wrapper for a code block (or set of code blocks within a single binary) in a service. Decorators can support one or more features at a time.
+
+**Inbound Decorator** - a decorator running as an application middleware that guards a service by regulating incoming requests.
+
+**Outbound Decorator** - a decorator wrapping an outgoing call to another service, guarding the service at the caller.
 
 ### QPS
 
+*Queries Per Second* - the number of queries that a service can handle per second.
+
+When calling a rate-limited third party service (Stripe, GitHub) QPS is a set number.
+
+When calling a non-rate limited service like RDS Postgres, ElasticSearch, or another microservice, QPS can be determined by load testing or though metrics.
+
 ## UI Concepts
+
+### UI Toolkit
+The Stanza browser based traffic flow control SDK which sends telemetry and receives configuration updates from the Stanza Hub based on control plane calculations and user preferences around features and priorities. 
 
 ### Stanza Config
 The [Stanza Config](./javascript/stanzaconfig) defines the configuration for Stanza in the browser - including things like API key, environment, and context.

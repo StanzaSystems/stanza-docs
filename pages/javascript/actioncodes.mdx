@@ -1,0 +1,28 @@
+# Action Codes
+Action codes are commands issued to the UI to adapt to system stress. The UI is one of the most powerful tools for system stress adaptation because it can simultaneously give the user a fast and informative experience, and stop requests at the source - alleviating system pressure.
+
+0. Remove
+- Action to remove a UI element from the view of the user, and stop sending any requests related to that UI element. Sub options:
+  - Remove negitive space
+  - Keep negitive space, no message
+  - display error message
+  - Links
+    - disable
+    - disable with tooltip
+    - do not show
+    - Redirect
+
+- Remove actions may come with an optional message, which should be handled in the way that best suits the UI element in question
+
+
+1. Keep with Message
+- Action to keep a UI element but display information about it's status. Message options
+  - Message above Contents
+  - Message below Contents
+  - for text fields, message in the input
+- If this action code shows up with no message it's invalid
+
+
+2. Cache (Coming Soon!)
+- Add a cache control header if it's not There
+- make it longer if it is

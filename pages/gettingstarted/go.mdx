@@ -1,1 +1,87 @@
-# Getting Started with Go Server-Side
+# Getting Started with Go and Fiber
+
+Stanza provides a go SDK that has an integration with Go Fiber. 
+
+## Install the package
+
+```shell
+$ go get github.com/StanzaSystems/sdk-go
+```
+
+## Initialize Stanza
+
+### Import the necessary dependencies
+```go
+import (
+	"context"
+	"encoding/json"
+
+	"github.com/StanzaSystems/sdk-go/adapters/fiberstanza"
+	"github.com/gofiber/contrib/fiberzap"
+	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
+```
+### Initialize a go context at the root of your application
+Stanza relies on Go context to work. Create a Go context at the root of your server.
+
+```go
+	ctx := context.Background()
+```
+
+### Initialize Stanza at the root of your application, before Fiber
+You will need to pass the context through
+```go
+	shutdown, stanzaInitErr := fiberstanza.Init(ctx,
+		fiberstanza.Client{
+			APIKey:      "c6af1e6b-78f4-40c1-9428-2c890dcfdd7f", // from the Stanza UI
+			Name:        name, // the name of this service
+			Release:     release,
+			Environment: "local", // the environment you are running in 
+			StanzaHub:   "hub.dev.getstanza.dev:443" // from the Stanza UI
+		})
+  defer shutdown()
+	if stanzaInitErr != nil {
+		logger.Error("stanza.init", zap.Error(stanzaInitErr))
+	}
+```
+
+## Leverage Stanza
+
+### Root Decorators
+
+Stanza root decorators intercept a service's incoming traffic to guard that service from overload.
+Services with root decorators can be configured for maximum CPU usage and to limit QPS in the Stanza UI.
+
+To use a root decorator, register it with your fiber server.
+
+```go
+// fiber: HTTP server
+	app := fiber.New()
+
+  if stanzaInitErr == nil {
+		app.Use(fiberstanza.Middleware("RootDecorator"))
+	}
+
+```
+
+### Outbound Decorators
+Outbound decorators guard a service from overload at the calling point to the service. They are useful for managing requests to services you do not control the code for.
+For example, Outbound decorators are a great way to manage rate limiting from third parties.
+
+To use an outbound decorator, wrap the HTTP call using the Stanza fiber HTTP client. The following example uses Stanza to call ZenQuotes. 
+Because it is passing the Stanza feature, it can prioritize requests for higher priority features when approaching rate limits.
+
+```go
+resp, err := fiberstanza.HttpGet("https://zenquotes.io/api/random",
+			fiberstanza.Decorate("ZenQuotes", fiberstanza.GetFeatureFromContext(c)))
+		if err != nil {
+			// Consider how you want to handle this error! This could be an error from ZenQuotes or a
+			// "429 Too Many Requests" from Stanza. For example, instead of returning the error directly,
+			// maybe display a user friendly "Something went wrong!" type of error page. Or if it's an
+			// optional component of a larger page, just skip rendering it without returning an error.
+			return err
+		}
+		defer resp.Body.Close()
+```

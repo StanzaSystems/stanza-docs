@@ -1,0 +1,66 @@
+# How does it work?
+
+At heart, Stanza is what SREs would call a traffic management tool. 
+On the front-end, Stanza UI Toolkit lets developers define the feature an HTTP request supports (is this the most important thing in the app, or a widget?), and uses that information to make sure the important stuff happens reliably and fast.
+On the back end, the Stanza SDK uses a middleware-based approach to intercept your HTTP requests (traffic), and makes good decisions about what to do with them.
+
+In addition, Stanza is a two way street! 
+
+When Stanza detects that a back end service is approaching it's limits in ability to serve requests, it begins to slow or drop low priority requests. At the same time, it lets the UI know that these failures are occurring.
+The Stanza UI toolkit responds to degredation messages from the back end by stopping requests from low prioirty UI components - quietly or with optional custom error messages - saving the user from waiting and wondering.
+
+
+### Before Stanza
+
+Requests come to the back-end, and fail randomly, regardless of importance. Users wonder what happened.
+
+[![](https://mermaid.ink/img/pako:eNqNksGO0zAQhl_FmAtIScUmTpwaCWnbAkKCCyuBgHDwxpPWamKHsQMtTd8dpwaEWFbCJ3v8f_-Mx3OijVVABd2iHHbk9dvakLCuH7VStDIdwA4dpFu040DWo_O2B3SPSZo-m171g0UvjSer0WkDzk1k8-mDHZG8QBvCz436HO3uhGcDMr3UX4H0QPRvpxakHxEeTGQVkZVs9v9v9E2rLXh3L76K8vi2Qy9xfzf3RNaR3Ugvb6WDf7Fu0MYAkveXhAThywjO34duSLqYWZRG2Z4AosXQrOuntYmCTpv9jT92QPKEJQVxHu0e0vAcvxPZcEha3XXCWANJvBIIKtA0oeE_eqlV-MHT7FVTv4MeairCdi6hpskf8XcStbztwM2CU0xe0wF16MVxbTuLkXzYNNC25U941jhorFF_qaAFrlhNZ9G5NudQjxy9vTmahgqPIyR0HJT0sNEyDFhPQ-86F6KgtLf4Jo7eZQITOkjz0dr-FxiOVJzogQq-XFQF56xgOct4cZUl9EhFzrNFwa4qxvOSZdmy4OeEfr8YPFlUZVVmrCj5siqKnPHzD_yD7_U?type=png)](https://mermaid.live/edit#pako:eNqNksGO0zAQhl_FmAtIScUmTpwaCWnbAkKCCyuBgHDwxpPWamKHsQMtTd8dpwaEWFbCJ3v8f_-Mx3OijVVABd2iHHbk9dvakLCuH7VStDIdwA4dpFu040DWo_O2B3SPSZo-m171g0UvjSer0WkDzk1k8-mDHZG8QBvCz436HO3uhGcDMr3UX4H0QPRvpxakHxEeTGQVkZVs9v9v9E2rLXh3L76K8vi2Qy9xfzf3RNaR3Ugvb6WDf7Fu0MYAkveXhAThywjO34duSLqYWZRG2Z4AosXQrOuntYmCTpv9jT92QPKEJQVxHu0e0vAcvxPZcEha3XXCWANJvBIIKtA0oeE_eqlV-MHT7FVTv4MeairCdi6hpskf8XcStbztwM2CU0xe0wF16MVxbTuLkXzYNNC25U941jhorFF_qaAFrlhNZ9G5NudQjxy9vTmahgqPIyR0HJT0sNEyDFhPQ-86F6KgtLf4Jo7eZQITOkjz0dr-FxiOVJzogQq-XFQF56xgOct4cZUl9EhFzrNFwa4qxvOSZdmy4OeEfr8YPFlUZVVmrCj5siqKnPHzD_yD7_U)
+
+### After Stanza
+
+Requests come to the back-end, and the most important ones continue to succeed! Users get automatic helpful info about why things seem off.
+
+[![](https://mermaid.ink/img/pako:eNqNkk-P0zAQxb_K1FxASiKa5k-bSkjbdhFILIddBALCwY0nadTEE2wHNjT97jjrglbLBZ_iyfs9v7HnxAoSyDJWKd4d4N1tLsGuq-clz0rud0hdg36lqO9g22tDLSr9Anz_1fi27UgZLg1sel1L1HqE3dfP1Ct4rciWr6X45uz-KU8GMIYBvCeQiAJKUmAOCD9rUaHRsxE2jtnw4vjIaeNIl84c-navfRvthtcSOl4hKPzeozYjbB2_44bvucYLv3X8PIA32FgOZ_CByPJygFuHTm2sL7nBDyb5J5cKuEKgsmxstzO4_oFqMIdaVoCNRqg1VERihCtLO94Kj3dmaBAWoI2iI_q2QXPIwu7eK-umySRJ9NyvTKFYP-Xm_8FVClGumcfs27S8FvY1T5NPzuyNtpizzH5Od5Az71H9I1c13zeoJ8HJHZyzTtUtV8OWGlKOfFYUWJbJBZ40GguS4okKS0xFlLNJdM7l2ebhvaG7QRYsM6pHj_Wd4AZ3NbfD1v4poqgNqRs3hQ_D6LGOyy9EfyV2y7ITu2dZugqWcZpGcbSIwjSehx4bWLZIwyCO5ssoXSRRGK7i9OyxXw8GL4NlskzCKE7S1TKOF1F6_g0_aPMo?type=png)](https://mermaid.live/edit#pako:eNqNkk-P0zAQxb_K1FxASiKa5k-bSkjbdhFILIddBALCwY0nadTEE2wHNjT97jjrglbLBZ_iyfs9v7HnxAoSyDJWKd4d4N1tLsGuq-clz0rud0hdg36lqO9g22tDLSr9Anz_1fi27UgZLg1sel1L1HqE3dfP1Ct4rciWr6X45uz-KU8GMIYBvCeQiAJKUmAOCD9rUaHRsxE2jtnw4vjIaeNIl84c-navfRvthtcSOl4hKPzeozYjbB2_44bvucYLv3X8PIA32FgOZ_CByPJygFuHTm2sL7nBDyb5J5cKuEKgsmxstzO4_oFqMIdaVoCNRqg1VERihCtLO94Kj3dmaBAWoI2iI_q2QXPIwu7eK-umySRJ9NyvTKFYP-Xm_8FVClGumcfs27S8FvY1T5NPzuyNtpizzH5Od5Az71H9I1c13zeoJ8HJHZyzTtUtV8OWGlKOfFYUWJbJBZ40GguS4okKS0xFlLNJdM7l2ebhvaG7QRYsM6pHj_Wd4AZ3NbfD1v4poqgNqRs3hQ_D6LGOyy9EfyV2y7ITu2dZugqWcZpGcbSIwjSehx4bWLZIwyCO5ssoXSRRGK7i9OyxXw8GL4NlskzCKE7S1TKOF1F6_g0_aPMo)
+
+Because requests are stopped at the client, we avoid server-side infrastructure backups that would historically cause costly autoscaling and big slowdowns.
+
+## Libraries
+Unlike most traffic solutions out there, Stanza uses libraries to provide functionality. This has several advantages, including ease of debugging and ability to manage traffic in PaaS and other non-sidecar friendly environments.
+
+Stanza libraries can be divided in two categories:
+- `UI Toolkit` libraries run in the browser, helping the client be a cooperative part of the overall infrastructure. They annotate data, and help to adapt the UI to failure modes.
+- `Stanza SDKs` run in server-side code, typically as middleware. They read request metadata and use it to prioritize requests under load. They also emit basic telemetry to Stanza to help detect problems before the user does.
+
+## Stand-Alone Stanza
+Stanza is most powerful when front-end and back-end are working together, but we know that can be easier said than done! Stanza has stand-alone modes for front and back end.
+
+### Front-End
+
+With just the `UI toolkit`, you can integrate Stanza into your front end code to build adaptive UIs based on features. This enables you to:
+- Turn off features when there is an outage, and remove them from the UI
+- Push custom error messages to users, inline in the UI
+
+### Back-End
+
+With just a `Stanza SDK`, you can integrate Stanza into your back end code and define Stanza features. This enables you to:
+- Load shed low prioirty featuers when approaching infrastructure limits
+
+Stanza back-end functionality depends on forwarding of W3C baggage across services.
+
+
+## W3C Baggage Dependency
+
+Stanza is not monitoring software - but it does need information about requests so that it can correctly prioritize them! We pass information like feature on the [W3C Baggage](https://www.w3.org/TR/baggage/) header.
+If a back end service has a Stanza SDK Middleware, we will make sure that baggage is forwarded according to the specification. If a request passes through a service that doesn't have Stanza, baggage must be forwarded another way.
+The good news is, you can use pretty much any distributed tracing library to do this. Baggage will be correctly forwarded by:
+- Any [Open Telemetry](https://opentelemetry.io/) distributed tracing library. The following distributed tracing providers leverage Open Telemetry libraries:
+  - [Honeycomb](https://www.honeycomb.io/)
+  - [Lightstep](https://lightstep.com/)
+  - [Open Telemetry in New Relic](https://docs.newrelic.com/docs/more-integrations/open-source-telemetry-integrations/opentelemetry/opentelemetry-introduction/)
+    - New Relic without otel does not support Baggage
+- [DataDog Distributed Tracing](https://www.datadoghq.com/product/apm/#end-to-end-tracing)
+- [Sentry Performance](https://sentry.io/for/performance/)
+
+If you are already distributed tracing - you're probably good! If you are not, try it - it's amazing!
+
+

@@ -1,11 +1,9 @@
 {
   "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)",
-  "about": {
-    "title": "About",
-    "type": "page"
-  },
+  "howitworks": "How It Works",
+  "gettingstarted": "Getting Started",
+  "concepts": "Stanza Concepts",
+  "javascript": "JavaScript Reference",
   "contact": {
     "title": "Contact ↗",
     "type": "page",

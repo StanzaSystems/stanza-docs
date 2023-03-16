@@ -1,17 +1,19 @@
 {
-  "name": "stanza docs",
+  "name": "stanza_docs",
   "version": "0.0.1",
   "description": "Stanza documentation",
   "scripts": {
     "dev": "next dev -p 3007",
     "build": "next build",
-    "start": "next start -p 3007"
+    "start": "next start -p 3007",
+    "spellcheck": "npx cspell lint",
+    "lint": "next lint"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/StanzaSystems/stanza-docs.git"
   },
-  "author": "Stanza",
+  "author": "Stanz",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/StanzaSystems/stanza-docs/issues"
@@ -23,6 +25,11 @@
     "nextra-theme-docs": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "engines": {
+    "node": ">=16.* <17",
+    "npm": "please-use-pnpm",
+    "pnpm": ">=7.27.0"
   },
   "devDependencies": {
     "@types/node": "18.11.10",

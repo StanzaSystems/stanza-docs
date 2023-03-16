@@ -17,7 +17,7 @@ Create a [Stanza Config](../javascript/stanzaconfig) using the Stanza UI to get 
 ```ts
 const config: StanzaCoreConfig = {
   url: 'http://hub.dev.getstanza.dev:443', // the Stanza service url
-  environment: 'local', // the environment you want to pull configruations for
+  environment: 'local', // the environment you want to pull configurations for
   apiKey: '12345667', // an API key issued in the Stanza UI
   refreshSeconds: 3, // the refresh rate of the feature statuses
   contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
@@ -40,7 +40,7 @@ The URL and API key can be found in the Stanza UI.
 Choosing features and contexts can be a little bit tricky! The things to keep in mind are:
 1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
 2. When Features are disabled, Stanza stops requests related to that feature from sending. This is good for the infra, but it means if you don't handle this in some way in the UI users will have a very weird time.
-3. You don't have to get a feature label on everything! Start with your most important features, and your least important ones. Other features will default to a medium prioirty.
+3. You don't have to get a feature label on everything! Start with your most important features, and your least important ones. Other features will default to a medium priority.
 3. A context is a group of features found in one page - Stanza will grab them all at once and refresh the cache simultaneously.
 
 

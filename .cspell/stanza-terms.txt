@@ -1,3 +1,6 @@
+actioncodes
 devcontainer
-Stanz
+getstanza
 nextra
+Stanz
+stanzaconfig

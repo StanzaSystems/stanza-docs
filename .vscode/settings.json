@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "editor.formatOnSave": true,
+    "npm.packageManager": "pnpm"
+}

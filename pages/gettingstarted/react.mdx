@@ -5,16 +5,18 @@ Stanza has a React library that provides a react context to use in React applica
 Stanza supports all evergreen browsers.
 
 ## Install the Browser library
-```
+```shell
 npm install @getstanza/react
 ```
 
 ## Getting Started In React
 
-Create a [Stanza Config](../javascript/stanzaconfig) using the Stanza UI to get your API key.
+Create a [stanzaConfig.ts](../javascript/stanzaconfig) using the Stanza UI to get your API key.
 
 ```ts
-const config: StanzaCoreConfig = {
+import type { StanzaCoreConfig } from '@getstanza/core'
+
+export const config: StanzaCoreConfig = {
   url: 'http://hub.dev.getstanza.dev:443', // the Stanza service url
   environment: 'local', // the environment you want to pull configruations for
   apiKey: '12345667', // an API key issued in the Stanza UI

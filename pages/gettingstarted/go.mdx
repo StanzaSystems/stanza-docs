@@ -1,6 +1,6 @@
 # Getting Started with Go and Fiber
 
-Stanza provides a go SDK that has an integration with Go Fiber. 
+Stanza provides a Go SDK with adapters for easy integration with popular libraries.
 
 ## Install the package
 
@@ -11,6 +11,10 @@ $ go get github.com/StanzaSystems/sdk-go
 ## Initialize Stanza
 
 ### Import the necessary dependencies
+
+For example if you are using [Fiber](https://gofiber.io/) and [Zap](https://github.com/uber-go/zap), you can use
+the fiberstanza adapter:
+
 ```go
 import (
 	"context"
@@ -23,65 +27,77 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 ```
-### Initialize a go context at the root of your application
-Stanza relies on Go context to work. Create a Go context at the root of your server.
+
+### Initialize Stanza at the root of your application
 
 ```go
-	ctx := context.Background()
-```
+const (
+	name        = "MyService"
+	release     = "0.1.0"
+	environment = "dev"
+	debug       = true
+)
 
-### Initialize Stanza at the root of your application, before Fiber
-You will need to pass the context through
-```go
-	shutdown, stanzaInitErr := fiberstanza.Init(ctx,
-		fiberstanza.Client{
-			APIKey:      "c6af1e6b-78f4-40c1-9428-2c890dcfdd7f", // from the Stanza UI
-			Name:        name, // the name of this service
-			Release:     release,
-			Environment: "local", // the environment you are running in 
-			StanzaHub:   "hub.dev.getstanza.dev:443" // from the Stanza UI
-		})
-  defer shutdown()
-	if stanzaInitErr != nil {
-		logger.Error("stanza.init", zap.Error(stanzaInitErr))
-	}
+// Create a context before initialzing Stanza (or re-use an existing one)
+ctx := context.Background()
+
+shutdown, stanzaInitErr := fiberstanza.Init(ctx,
+	fiberstanza.Client{
+		APIKey:      "c6af1e6b-78f4-40c1-9428-2c890dcfdd7f", // API key from the Stanza UI
+		Name:        name,        // the name of your service
+		Release:     release,     // the release/version of your service
+		Environment: environment, // the environment of your service 
+	})
+defer shutdown()
+if stanzaInitErr != nil {
+	logger.Error("stanza.init", zap.Error(stanzaInitErr))
+}
 ```
 
 ## Leverage Stanza
 
-### Root Decorators
+### Inbound Decorators
 
-Stanza root decorators intercept a service's incoming traffic to guard that service from overload.
-Services with root decorators can be configured for maximum CPU usage and to limit QPS in the Stanza UI.
+Stanza inbound decorators intercept a service's incoming traffic to guard that service from overload.
+Services with inbound decorators can be configured to shed load in the Stanza UI based on multiple factors,
+including requests per second, CPU saturation, and memory utilization.
 
-To use a root decorator, register it with your fiber server.
+To use an inbound decorator, register it as middleware using one of the Stanza adapters. For example, if you
+are using [Fiber](https://gofiber.io/), you would use the fiberstanza middleware:
 
 ```go
 // fiber: HTTP server
-	app := fiber.New()
+app := fiber.New()
 
-  if stanzaInitErr == nil {
-		app.Use(fiberstanza.Middleware("RootDecorator"))
-	}
-
+if stanzaInitErr == nil {
+	app.Use("/", fiberstanza.Middleware("RootDecorator"))
+	app.Use("/login", fiberstanza.Middleware("LoginDecorator"))
+}
 ```
 
 ### Outbound Decorators
-Outbound decorators guard a service from overload at the calling point to the service. They are useful for managing requests to services you do not control the code for.
-For example, Outbound decorators are a great way to manage rate limiting from third parties.
 
-To use an outbound decorator, wrap the HTTP call using the Stanza fiber HTTP client. The following example uses Stanza to call ZenQuotes. 
-Because it is passing the Stanza feature, it can prioritize requests for higher priority features when approaching rate limits.
+Outbound decorators guard another service from overload at the calling point of your service. They are useful for
+managing requests to services you do not control the code for. For example, outbound decorators are a great way to
+manage rate limiting from third parties.
+
+To use an outbound decorator, wrap the call using the Stanza API provided functions. If you have already imported an
+adapter (fiberstanza for example), you will have many outbound wrappers available to use (HttpGet, HttpPost, etc).
+
+The following example uses Stanza to call ZenQuotes. Because it is passing the optional Stanza feature, it can
+prioritize requests for higher priority features when approaching rate limits.
 
 ```go
+// resp, err := http.Get("https://zenquotes.io/api/random") // before Stanza looks like this
+
 resp, err := fiberstanza.HttpGet("https://zenquotes.io/api/random",
-			fiberstanza.Decorate("ZenQuotes", fiberstanza.GetFeatureFromContext(c)))
-		if err != nil {
-			// Consider how you want to handle this error! This could be an error from ZenQuotes or a
-			// "429 Too Many Requests" from Stanza. For example, instead of returning the error directly,
-			// maybe display a user friendly "Something went wrong!" type of error page. Or if it's an
-			// optional component of a larger page, just skip rendering it without returning an error.
-			return err
-		}
-		defer resp.Body.Close()
+				fiberstanza.Decorate("ZenQuotes", fiberstanza.GetFeatureFromContext(c)))
+if err != nil {
+	// Consider how you want to handle this error! This could be an error from ZenQuotes or a
+	// "429 Too Many Requests" from Stanza. For example, instead of returning the error directly,
+	// maybe display a user friendly "Something went wrong!" type of error page. Or if it's an
+	// optional component of a larger page, just skip rendering it without returning an error.
+	return err
+}
+defer resp.Body.Close()
 ```

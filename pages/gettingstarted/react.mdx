@@ -64,9 +64,33 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 ```
 
-### Use Stanza context
+### Use Stanza Component to Wrap Features
 
-The Stanza context gives you actions codes and messages related to features you defined in your configuration. 
+`StanzaComponent` is a fast wrapper for features that automatically removes them from the UI and/or adds error messages under stress. 
+The following code leverages StanzaComponent to wrap a "featured products" section of an ecommerce page.
+
+```js
+import React from 'react'
+import products from '../data/products'
+import Products from './Products'
+import StanzaComponent from './StanzaComponent'
+
+const FeaturedProducts = () => {
+  const featuredProducts = products.filter(({ tags }) => tags.includes('featured'))
+  return <StanzaComponent contextName="main" featureName="featured" removedFallback={({ message }) => (
+    <p style={{ color: 'red' }}>{message}</p>
+  )}>
+    <h2 className="section-title">Products on Sale Today!</h2>
+    <Products products={featuredProducts}/>
+  </StanzaComponent>
+}
+
+export default FeaturedProducts
+```
+
+### Use Stanza context directly
+
+For more direct control, you can use `StanzaContext` directly. The Stanza context gives you actions codes and messages related to features you defined in your configuration. 
 Here it is used in an ecommerce app to remove featured products under load, and display relevant error messages in search.
 
 ```js

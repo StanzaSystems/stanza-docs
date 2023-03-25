@@ -35,7 +35,7 @@ function MyApp ({ Component, pageProps }: AppProps) {
 }
 ```
 
-Stanza Next library makes it easier to keep values that need to be shared between client and server code in sync. Currently, we provide utilities to keep `enablementNumber` consistent between the client-server boundary.
+Stanza Next library makes it easier to keep values that need to be shared between client and server code in sync. Currently, we provide utilities to keep [`enablementNumber`](../concepts#enablement-number) consistent between the client-server boundary.
 
 In order to obtain the `enablementNumber` in the client you need to create an Next API endpoint e.g. `pages/api/enablementNumber.ts` with the following content:
 

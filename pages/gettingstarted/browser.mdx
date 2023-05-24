@@ -1,6 +1,6 @@
 # Getting Started with Stanza in the Browser
 
-Stanza has a browser library that provides primitives for using Stanza in browsers. 
+Stanza has a browser library that provides primitives for using Stanza in browsers.
 Non-React user interfaces can get good value from the browser SDK, but if you are using React - use of the React SDK is recommended.
 
 Stanza supports all evergreen browsers.
@@ -16,9 +16,9 @@ Create a [Stanza Config](../javascript/stanzaconfig) using the Stanza UI to get 
 
 ```ts
 const config: StanzaCoreConfig = {
-  url: 'http://hub.dev.getstanza.dev:443', // the Stanza service url
+  url: 'https://hub.demo.getstanza.io', // the Stanza service url
   environment: 'local', // the environment you want to pull configurations for
-  apiKey: '12345667', // an API key issued in the Stanza UI
+  stanzaApiKey: 'valid-api-key', // an API key issued in the Stanza UI
   refreshSeconds: 3, // the refresh rate of the feature statuses
   contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
     {
@@ -27,15 +27,15 @@ const config: StanzaCoreConfig = {
     },
     {
       name: 'details',
-      features: ['productSummary', 'pricing', 'shipping', 'checkout']
+      features: ['checkout']
     }
   ],
 }
 ```
 
-The URL and API key can be found in the Stanza UI.
+The URL and API key can be found in the Stanza UI. Also, all of the following examples are written in TypeScript, but you can use Stanza with vanilla JavaScript as well.
 
-### Choosing Features and Contexts 
+### Choosing Features and Contexts
 
 Choosing features and contexts can be a little bit tricky! The things to keep in mind are:
 1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
@@ -49,8 +49,8 @@ Choosing features and contexts can be a little bit tricky! The things to keep in
 1. Initialize Stanza very early in page lifecycle (init is a non-blocking call)
 
 ```ts
-import Stanza from 'stanza-browser'
-Stanza.init(config) // pass the config you defined earlier
+import { StanzaBrowser } from '@getstanza/browser'
+StanzaBrowser.init(config) // pass the config you defined earlier
 ```
 
 2. Get the Stanza context for your current page.
@@ -103,13 +103,13 @@ An example Stanza Context:
 3. Listen for context update events
 
 ```ts
-import StanzaBrowser from 'stanza-browser'
+import { StanzaBrowser } from '@getstanza/browser'
 StanzaBrowser.contextChanges.addChangeListener(async function () {
   const context = await StanzaBrowser.getContext('main')
  // update the DOM here!
 })
 ```
 
-4. Implement any Stanza actions you intend to use in your code. [Action code](../javascript/actioncodes) meanings are defined in the UI Toolkit docs. 
+4. Implement any Stanza actions you intend to use in your code. [Action code](../javascript/actioncodes) meanings are defined in the UI Toolkit docs.
 
 * Tip: The React SDK implements action codes for you! This is a lot easier than rolling this by hand. We promise we will get to Vue, Svelte and other goodies ASAP.

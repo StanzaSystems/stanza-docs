@@ -17,9 +17,9 @@ Create a [stanzaConfig.ts](../javascript/stanzaconfig) using the Stanza UI to ge
 import type { StanzaCoreConfig } from '@getstanza/core'
 
 export const config: StanzaCoreConfig = {
-  url: 'http://hub.dev.getstanza.dev:443', // the Stanza service url
+  url: 'https://hub.demo.getstanza.io', // the Stanza service url
   environment: 'local', // the environment you want to pull configruations for
-  apiKey: '12345667', // an API key issued in the Stanza UI
+  stanzaApiKey: 'valid-api-key', // an API key issued in the Stanza UI
   refreshSeconds: 3, // the refresh rate of the feature statuses
   contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
     {
@@ -28,7 +28,7 @@ export const config: StanzaCoreConfig = {
     },
     {
       name: 'details',
-      features: ['productSummary', 'pricing', 'shipping', 'checkout']
+      features: ['checkout']
     }
   ],
 }
@@ -36,7 +36,7 @@ export const config: StanzaCoreConfig = {
 
 The URL and API key can be found in the Stanza UI.
 
-### Choosing Features and Contexts 
+### Choosing Features and Contexts
 
 Choosing features and contexts can be a little bit tricky! The things to keep in mind are:
 1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
@@ -68,7 +68,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 ### Use Stanza Component to Wrap Features
 
-`StanzaComponent` is a fast wrapper for features that automatically removes them from the UI and/or adds error messages under stress. 
+`StanzaComponent` is a fast wrapper for features that automatically removes them from the UI and/or adds error messages under stress.
 The following code leverages StanzaComponent to wrap a "featured products" section of an ecommerce page.
 
 ```js
@@ -92,12 +92,12 @@ export default FeaturedProducts
 
 ### Use Stanza context directly
 
-For more direct control, you can use `StanzaContext` directly. The Stanza context gives you actions codes and messages related to features you defined in your configuration. 
+For more direct control, you can use `StanzaContext` directly. The Stanza context gives you actions codes and messages related to features you defined in your configuration.
 Here it is used in an ecommerce app to remove featured products under load, and display relevant error messages in search.
 
 ```js
 import { useStanzaContext } from '@getstanza/react'
-import { ActionCode } from '@getstanza/core'
+import { ActionCode } from '@getstanza/browser'
 import Layout from '../components/Layout'
 import Cart from '../components/Cart'
 import CartSummary from '../components/CartSummary'
@@ -116,7 +116,7 @@ const MainPage = () => {
             <input style={{ flexBasis: '75%' }} type='text' id='searchProducts' placeholder={stanzaContext?.features.search.message}></input> // placeholder search text swap
           <button style={{ flexBasis: '25%' }}>Search</button>
           </form>
-          {stanzaContext?.features.featured.code !== ActionCode.REMOVE.valueOf() && ( // show featured products if not removed
+          {stanzaContext?.features.featured.code !== ActionCode.DISABLED_REMOVE.valueOf() && ( // show featured products if not removed
             <>
             <h2>Cool New Swag!</h2>
             <Products />

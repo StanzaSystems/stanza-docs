@@ -1,1 +1,103 @@
-# Getting Started with Node.js Server-Side
+# Getting Started with Stanza in Node.js
+
+Stanza provides an SDK implementation to integrate Stanza functionalities into a Node application.
+
+## Install the Stanza Node SDK
+
+```shell
+npm install @getstanza/node
+
+# or
+# yarn add @getstaza/node
+```
+
+## Initialize Stanza
+
+To initialize the Stanza SDK add the following script to your application eg. `initStanza.js`
+
+```js
+import { init } from '@getstanza/node'
+
+init({
+  hubUrl: '<url-to-hub>', // eg. https://hub.dev.getstanza.dev:9020
+  apiKey: '<valid-api-key>', // can be set up in Stanza UI
+  serviceName: '<service-name>', // eg. DemoCommerce (needs to be configured in Stanza UI)
+  serviceRelease: '<service-release>',
+  environment: '<environment>' // eg. local (needs to be configured in Stanza UI)
+})
+```
+
+Stanza Node SDK needs to be initialized before you load any other scripts in order to work correctly.
+* You can either load it using `-r` parameter in node
+```shell
+node -r initStanza.js app.js
+```
+* or import it at the beginning of you app file ie. `app.js`
+```js
+require('./initStanza')
+
+/*
+  your app code
+*/
+```
+
+## Wrapping code with a decorator
+
+One of the main features of Stanza is the ability to guard the execution of your code by wrapping it with a decorator. If you want to learn more about what decorators are please read our [concepts](../concepts) page first.
+
+Let's imaging the following block of code:
+
+```js
+console.log('About to call a service')
+await aService.doSomething()
+console.log('Service returned successfully')
+```
+
+If we want to guard this block of code with a Stanza decorator we can define a decorator first:
+
+```js
+const myDecorator = stanzaDecorator({ decorator: 'my-decorator' })
+```
+
+And then we can wrap the code with this decorator:
+
+```js
+await myDecorator.call(async () => {
+  console.log('About to call a service')
+  await aService.doSomething()
+  console.log('Service returned successfully')
+})
+```
+
+Now the code wrapped with a decorator will only get executed if all checks enforced by a decorator (requesting for quota, validating the incoming token etc.) are satisfied. Otherwise, it will reject with a StanzaError describing the cause of the execution being blocked.
+
+As an alternative we can wrap an existing function, let's call it `myFunction`, and wrap it to be reused later.
+
+```js
+async function myFunction() {
+  console.log('My function starts')
+  await doSomething()
+  console.log('Service returned successfully')
+}
+```
+
+In order to wrap it we can use the same decorator instance as above, but use a `bind` method instead:
+
+```js
+const myGuardedFunction = myDecorator.bind(myFunction)
+```
+
+In this example we don't call the `myFunction` immediately but wrap it with another function that can be reused and called later
+
+```js
+/*
+  This will first verify all the conditions enforced by a decorator and only execute `myFunction` if they are satisfied.
+ */
+myGuardedFunction()
+```
+
+
+
+
+
+

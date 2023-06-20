@@ -2,8 +2,8 @@
   "index": "Home",
   "howItWorks": "How It Works",
   "gettingStarted": "Getting Started",
-  "concepts": "Stanza Concepts",
   "javascript": "JavaScript Reference",
+  "glossary": "Glossary",
   "contact": {
     "title": "Contact ↗",
     "type": "page",

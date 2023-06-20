@@ -1,6 +1,20 @@
+# Why Use Stanza?
+Stanza solves a lot of common reliability problems. It does this in a way that most benefits the users of your software.
+
+We can help if you have had problems with:
+- rate-limited services like Stripe, Shopify or GitHub
+- Ensuring the most important parts of your application continue to work during high load
+- Protecting Redis/Postgres from instability and errors caused by high load.
+
+We can help you if you'd like the capability to:
+- Gracefully degrade user interfaces when underlying services like caches or database replicas are impaired
+- Communicating with users about what is happening - right in the application.
+
+Any time you've reliability or scaling challenges caused by user behavior or traffic, we can help. 
+
 # How does it work?
 
-At heart, Stanza is what SREs would call a traffic management tool. 
+At heart, Stanza is a traffic management tool. 
 On the front-end, Stanza UI Toolkit lets developers define the feature an HTTP request supports (is this the most important thing in the app, or a widget?), and uses that information to make sure the important stuff happens reliably and fast.
 On the back end, the Stanza SDK uses a middleware-based approach to intercept your HTTP requests (traffic), and makes good decisions about what to do with them.
 
@@ -29,7 +43,7 @@ Unlike most traffic solutions out there, Stanza uses libraries to provide functi
 
 Stanza libraries can be divided in two categories:
 - `UI Toolkit` libraries run in the browser, helping the client be a cooperative part of the overall infrastructure. They annotate data, and help to adapt the UI to failure modes.
-- `Stanza SDKs` run in server-side code, typically as middleware. They read request metadata and use it to prioritize requests under load. They also emit basic telemetry to Stanza to help detect problems before the user does.
+- `Stanza SDKs` run in server-side code, typically as middleware. They read request metadata and use it to prioritize requests under load. They also emit telemetry to Stanza to help detect problems before the user does.
 
 ## Stand-Alone Stanza
 Stanza is most powerful when front-end and back-end are working together, but we know that can be easier said than done! Stanza has stand-alone modes for front and back end.

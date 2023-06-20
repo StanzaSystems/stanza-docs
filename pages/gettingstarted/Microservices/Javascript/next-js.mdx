@@ -1,0 +1,97 @@
+# Getting Started with Stanza in NextJS
+
+Stanza has a NextJS library that provides utilities for integrating Stanza into NextJS APIs.
+
+## Install the Next library
+
+```shell
+npm install @getstanza/next
+```
+
+## Getting Started In Next
+
+Stanza's NextJS library is a set of Next specific utilities but it is based on the Stanza React library. Please follow the instructions for getting started with [React library](./react#getting-started-in-react) first.
+
+
+# Using Stanza in Next
+
+## Initialize Stanza
+
+Initialize stanza very early in your application lifecycle. In Next you can put the Stanza's initialization logic inside the `pages/_app.tsx` custom app script ([docs](https://nextjs.org/docs/advanced-features/custom-app))
+
+```ts
+import { createStanzaInstance, StanzaProvider } from '@getstanza/react'
+import { type AppProps } from 'next/app'
+import { config } from '../stanzaConfig'
+
+const stanzaInstance = createStanzaInstance(config)
+
+function MyApp ({ Component, pageProps }: AppProps) {
+  return (
+    <StanzaProvider instance={stanzaInstance}>
+      <Component {...pageProps} />
+    </StanzaProvider>
+  )
+}
+```
+
+Stanza Next library makes it easier to keep values that need to be shared between client and server code in sync. Currently, we provide utilities to keep [`enablementNumber`](../concepts#enablement-number) consistent between the client-server boundary.
+
+In order to obtain the `enablementNumber` in the client you need to create an Next API endpoint e.g. `pages/api/enablementNumber.ts` with the following content:
+
+```ts
+import { stanzaSession } from '@getstanza/next'
+
+const { withStanzaSession } = stanzaSession()
+
+export default withStanzaSession(async (req, res) => {
+  res.status(200).json(req.stanzaSession.enablementNumber)
+})
+```
+
+Then in your Stanza configuration you can retrieve this enablement number by configuring `enablementNumberGenerator` property:
+
+```ts
+const config: StanzaCoreConfig = {
+  /* rest of your configuration */
+  enablementNumberGenerator: async (): Promise<number> => {
+    if (typeof window !== 'undefined') {
+      const response = await fetch('/api/enablementNumber')
+      return response.json()
+    }
+    return 100
+  }
+}
+```
+
+## Pre-rendering with Stanza (coming soon)
+
+In order to make sure that enablement number is available for during server side rendering a [Next middleware](https://nextjs.org/docs/advanced-features/middleware) together with [getServerSideProps](https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props). Stanza Next integration provides:
+* `middleware` - a function that allows intercepting all incoming requests and make sure that `enablementNumber` is generated before we reach the page.
+* `getEnablementNumber` - a function that will read the enablement number from the session generated in the middleware
+
+To put it all together we need to create a `middleware.ts` file at the same level as the `pages` directory:
+
+```ts
+import { stanzaSession } from '@getstanza/next'
+
+export default stanzaSession().middleware
+```
+
+and then use can retrieve the enablement number in `getServerSideProps`:
+
+```ts
+const { getEnablementNumber } = stanzaSession()
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const enablementNumber = await getEnablementNumber(context.req)
+  return {
+    props: {
+      /* other server side props */
+      enablementNumber
+    }
+  }
+}
+```
+
+

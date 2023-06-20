@@ -1,0 +1,119 @@
+# Getting Started with Stanza in the Browser
+
+Stanza has a browser library that provides primitives for using Stanza in browsers.
+Non-React user interfaces can get good value from the browser SDK, but if you are using React - use of the [React SDK](./react) is recommended.
+
+Stanza supports all evergreen browsers.
+
+## Install the Browser library
+```shell
+npm install @getstanza/browser
+```
+
+## Getting Started In The Browser
+
+Create a [Stanza Config](../javascript/stanzaconfig) using the Stanza UI to get your API key.
+
+```ts
+const config: StanzaCoreConfig = {
+  url: 'https://hub.dev.getstanza.dev', // the Stanza service url
+  environment: 'local', // the environment you want to pull configurations for
+  stanzaApiKey: 'valid-api-key', // an API key issued in the Stanza UI
+  refreshSeconds: 3, // the refresh rate of the feature statuses
+  contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
+    {
+      name: 'main',
+      features: ['featured', 'search', 'checkout']
+    },
+    {
+      name: 'details',
+      features: ['checkout']
+    }
+  ],
+}
+```
+
+The URL and API key can be found in the Stanza UI. Also, all of the following examples are written in TypeScript, but you can use Stanza with vanilla JavaScript as well.
+
+### Choosing Features and Contexts
+
+A [Feature](/concepts#feature) is a capability of software and it's constituent traffic flow through backend services - like 'product search', 'checkout' or 'settings'
+
+A [Context](/concepts#context) is a group of features that you would like to load, store and refresh together.
+
+
+The things to keep in mind are:
+1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
+2. When Features are disabled, Stanza stops requests related to that feature from sending. This is good for the infra, but it means if you don't handle this in some way in the UI users will have a very weird time.
+3. Start with your most important features, and your least important ones. Other features will default to a medium priority.
+
+
+### Using Stanza in the Browser
+
+1. Initialize Stanza very early in page lifecycle (init is a non-blocking call)
+
+```ts
+import { StanzaBrowser } from '@getstanza/browser'
+StanzaBrowser.init(config) // pass the config you defined earlier
+```
+
+2. Get the Stanza context for your current page.
+
+```ts
+const context = await Stanza.getContext('main') // this checks cache and returns cached if fresh, but sends a request to the server otherwise
+```
+This returns a StanzaContext object with the following structure:
+```ts
+export interface StanzaContext {
+  readonly name: string
+  featuresNames: string[]
+  features: Record<string, StanzaFeature>
+  ready: boolean
+}
+```
+
+
+An example Stanza Context:
+```json
+{
+    "name": "main",
+    "featuresNames": [
+        "featured",
+        "search",
+        "checkout"
+    ],
+    "features": {
+        "featured": {
+            "name": "featured",
+            "code": 2,
+            "lastRefreshTime": 1677828433865
+        },
+        "search": {
+            "name": "search",
+            "code": 0,
+            "message": "We are having trouble with search - please retry your request.",
+            "lastRefreshTime": 1677828433865
+        },
+        "checkout": {
+            "code": -1,
+            "name": "checkout",
+            "lastRefreshTime": 1677828433865
+        }
+    },
+    "ready": true
+}
+```
+
+3. Listen for context update events
+
+```ts
+import { StanzaBrowser } from '@getstanza/browser'
+StanzaBrowser.contextChanges.addChangeListener(async function () {
+  const context = await StanzaBrowser.getContext('main')
+ // update the DOM here!
+})
+```
+
+4. Implement any Stanza actions you intend to use in your code. [Action code](../javascript/actioncodes) meanings are defined in the UI Toolkit docs.
+
+* Tip: The React SDK implements action codes for you! This is a lot easier than rolling this by hand. We promise we will get to Vue, Svelte and other goodies ASAP.

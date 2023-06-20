@@ -1,18 +1,14 @@
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
+import { DocsThemeConfig } from "nextra-theme-docs";
 
 const config: DocsThemeConfig = {
-  logo: <span>Stanza</span>,
+  logo: <span>Stanza Docs</span>,
   project: {
-    link: 'https://github.com/StanzaSystems',
+    link: "https://github.com/StanzaSystems",
   },
-  chat: {
-    link: 'https://discord.com',
-  },
-  docsRepositoryBase: 'https://github.com/StanzaSystems/stanza-docs/blob/main',
+  docsRepositoryBase: "https://github.com/StanzaSystems/stanza-docs/blob/main",
   footer: {
-    text: 'Stanza Docs',
+    text: "Stanza Docs",
   },
-}
+};
 
-export default config
+export default config;

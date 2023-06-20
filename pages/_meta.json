@@ -1,7 +1,7 @@
 {
   "index": "Home",
-  "howitworks": "How It Works",
-  "gettingstarted": "Getting Started",
+  "howItWorks": "How It Works",
+  "gettingStarted": "Getting Started",
   "concepts": "Stanza Concepts",
   "javascript": "JavaScript Reference",
   "contact": {

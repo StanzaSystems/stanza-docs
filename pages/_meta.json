@@ -1,7 +1,7 @@
 {
   "index": "Home",
-  "howItWorks": "How It Works",
-  "gettingStarted": "Getting Started",
+  "howitworks": "How It Works",
+  "gettingstarted": "Getting Started",
   "javascript": "JavaScript Reference",
   "glossary": "Glossary",
   "contact": {

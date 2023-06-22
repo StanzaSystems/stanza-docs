@@ -1,9 +1,10 @@
 {
-  "index": "Introduction",
+  "index": "Home",
   "howitworks": "How It Works",
   "gettingstarted": "Getting Started",
-  "concepts": "Stanza Concepts",
+  "dashboard": "Dashboard",
   "javascript": "JavaScript Reference",
+  "glossary": "Glossary",
   "contact": {
     "title": "Contact ↗",
     "type": "page",

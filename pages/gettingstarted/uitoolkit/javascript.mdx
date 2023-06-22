@@ -1,7 +1,7 @@
 # Getting Started with Stanza in the Browser
 
 Stanza has a browser library that provides primitives for using Stanza in browsers.
-Non-React user interfaces can get good value from the browser SDK, but if you are using React - use of the React SDK is recommended.
+Non-React user interfaces can get good value from the browser SDK. However, if you are using React or NextJS - the use of the appropriate SDK [React](./react)/[NextJS](./next-js) is recommended.
 
 Stanza supports all evergreen browsers.
 
@@ -37,11 +37,15 @@ The URL and API key can be found in the Stanza UI. Also, all of the following ex
 
 ### Choosing Features and Contexts
 
-Choosing features and contexts can be a little bit tricky! The things to keep in mind are:
+A [Feature](/glossary#feature) is a capability of software and it's constituent traffic flow through backend services - like 'product search', 'checkout' or 'settings'
+
+A [Context](/glossary#context) is a group of features that you would like to load, store and refresh together.
+
+
+The things to keep in mind are:
 1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
 2. When Features are disabled, Stanza stops requests related to that feature from sending. This is good for the infra, but it means if you don't handle this in some way in the UI users will have a very weird time.
-3. You don't have to get a feature label on everything! Start with your most important features, and your least important ones. Other features will default to a medium priority.
-3. A context is a group of features found in one page - Stanza will grab them all at once and refresh the cache simultaneously.
+3. Start with your most important features, and your least important ones. Other features will default to a medium priority.
 
 
 ### Using Stanza in the Browser

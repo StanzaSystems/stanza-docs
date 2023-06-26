@@ -95,9 +95,11 @@ In this example we don't call the `myFunction` immediately but wrap it with anot
  */
 myGuardedFunction()
 ```
+### Debug Mode
+The Stanza Node.js SDK has a debug mode that can be enabled to get additional output.
+Set an environment variable:
+```
+STANZA_LOG_LEVEL=debug
+```
 
-
-
-
-
-
+The debug mode uses Pino under the hood. If you want fewer logs, you can also set the log level higher according to the [pino](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string) log levels.

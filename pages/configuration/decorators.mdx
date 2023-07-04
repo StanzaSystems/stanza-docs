@@ -1,0 +1,27 @@
+# Configuring Decorators
+
+Decorators are Stanza's most powerful concept. Decorators can decorate a code path with various behaviors to improve reliability. 
+Decorators also collect telemetry about the performance of the code path.
+
+The following is a simple decorator configuration:
+
+```json
+{
+  "quotaConfig": {
+    "burst": 6,
+    "enabled": true,
+    "refillRate": 5,
+    "strictSynchronous": false
+  }
+}
+```
+
+`quotaConfig` - A configuration object to enable quota management in a decorator.
+
+`enabled` - Indicates whether quota management is currently on for this decorator.
+
+`refillRate` - The number of requests per second that the decorator should allow.
+
+`burst` - Your Decorator users will be able to temporarily make this many requests, but they will be held on average to Rate over a longer time window. Burst must be greater than or equal to Rate.
+
+`strictSynchronous` - If this is true then we will never locally cache tokens, every request will go through stanza. Use this if you may see very rapid and unpredictable spikes in traffic (ramping up faster than a period of 2 seconds), and if it is critical that you should never exceed your configured rates, even briefly.

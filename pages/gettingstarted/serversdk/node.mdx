@@ -53,7 +53,9 @@ await aService.doSomething()
 console.log('Service returned successfully')
 ```
 
-If we want to guard this block of code with a Stanza decorator we can define a decorator first:
+If we want to guard this block of code with a Stanza decorator we can first [create and configure a decorator in the stanza UI](/configuration/decorators). 
+
+Then we can define it in code:
 
 ```js
 const myDecorator = stanzaDecorator({ decorator: 'my-decorator' })

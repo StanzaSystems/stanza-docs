@@ -1,6 +1,6 @@
 # Stanza Docs
 
-This is the documentation repository for Stanza. There is not much here yet. 
+This is the documentation repository for Stanza. We welcome contributions to improve our documentation story.
 
 ## Local Development
 
@@ -9,8 +9,8 @@ First, run `pnpm i` to install the dependencies.
 Then, run `pnpm dev` to start the development server and visit localhost:3007.
 
 ## Main branch builds
-Builds on the main branch can be found at the [preview link](http://stanza-docs-git-main-stanza.vercel.app?_vercel_share=pPA3Lco0dQqLZqeFs14uTuEOBza3hnVn) until this repo is public.
+Docs deploy directly to [https://docs.dev.getstanza.dev/](https://docs.dev.getstanza.dev/)
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under Apache 2.

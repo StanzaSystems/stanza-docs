@@ -4,6 +4,8 @@ This is the documentation repository for Stanza. We welcome contributions to imp
 
 ## Local Development
 
+You will need to install [pnpm](https://pnpm.io/) if you don't already have it.
+
 First, run `pnpm i` to install the dependencies.
 
 Then, run `pnpm dev` to start the development server and visit localhost:3007.

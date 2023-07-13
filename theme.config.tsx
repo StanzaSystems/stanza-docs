@@ -5,6 +5,9 @@ const config: DocsThemeConfig = {
   project: {
     link: "https://github.com/StanzaSystems",
   },
+  chat: {
+    link: 'https://discord.gg/fpW5cWemXH',
+  },
   docsRepositoryBase: "https://github.com/StanzaSystems/stanza-docs/blob/main",
   footer: {
     text: "Stanza Docs",

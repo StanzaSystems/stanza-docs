@@ -9,13 +9,13 @@ A capability of software, and it's constituent traffic flow through backend serv
 An assigned number from 0-10 that defines the priority of a feature. Priority 0 features are highest priority, and priority 10 features are lowest. Features not assigned a prioirty are defaulted to 5.
 
 ### Service
-A piece of software that you operate or control, that is in a separate binary/runs independent of other code. Typically a 'Micro-service' in industry. A service owns one or many decorators.
+A piece of software that you operate or control, that is in a separate binary/runs independent of other code. Typically a 'Micro-service' in industry. A service owns one or many guards.
 
 ### Third-Party Service
-A service your code calls, but that you do not maintain the code for or operate. Examples are Stripe, RDS, GitHub, Firebase. A third-party service cannot own decorators, but it may have calling decorators.
+A service your code calls, but that you do not maintain the code for or operate. Examples are Stripe, RDS, GitHub, Firebase. A third-party service cannot own guards, but it may have calling guards.
 
 ### Guarded Service
-A service that Stanza is managing traffic inbound traffic to using decorators, either in the service itself, or in the service's callers.
+A service that Stanza is managing traffic inbound traffic to using guards, either in the service itself, or in the service's callers.
 
 ### Environment
 An environment of servers/deployments you maintain, either for production or for testing. 'dev', 'qa', 'prod', etc.
@@ -24,30 +24,30 @@ An environment of servers/deployments you maintain, either for production or for
 Projects are simple grouping buckets to make things easy to search for and assign security permissions to. You will assign all features and services to a project.
 
 ### Timeline
-Updates to the decorators, features, projects, and key objects will automatically be logged, and these events make up the timeline.
+Updates to the guards, features, projects, and key objects will automatically be logged, and these events make up the timeline.
 
 ## Back-End
 
 ### Server SDK
 The Stanza traffic flow control and telemetry SDK primarily for application and server development in common systems languages such as java, golang, python, or node.
 
-### Decorator
-A Stanza library wrapper for a code block (or set of code blocks within a single binary) in a service. Decorators can support one or more features at a time, and have three types:
+### Guard
+A Stanza library wrapper for a code block (or set of code blocks within a single binary) in a service. Guards can support one or more features at a time, and have three types:
 
 import { Callout } from 'nextra/components'
 
 <Callout emoji="">
-#### Inbound Decorator 
-A decorator running as an application middleware that guards a service by regulating incoming requests. 
+#### Inbound Guard 
+A guard running as an application middleware that guards a service by regulating incoming requests. 
 These are part of request handlers for inbound requests. 
-They allow load to be shed if necessary as requests enter the service which includes the ingress decorator
+They allow load to be shed if necessary as requests enter the service which includes the ingress guard
 
-#### Outbound Decorator 
-A decorator wrapping an outgoing call to another service, guarding the service at the caller.
-These wrap outbound requests, and provide a place where we can shed load before requests leave the service which includes the egress decorator
+#### Outbound Guard 
+A guard wrapping an outgoing call to another service, guarding the service at the caller.
+These wrap outbound requests, and provide a place where we can shed load before requests leave the service which includes the egress guard
 
-#### Internal Decorator
-Any piece of code may be wrapped in a decorator. The code block may make outbound requests, or it may simply do something "expensive" locally.
+#### Internal Guard
+Any piece of code may be wrapped in a guard. The code block may make outbound requests, or it may simply do something "expensive" locally.
 </Callout>
 
 

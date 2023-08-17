@@ -56,13 +56,13 @@ if stanzaInitErr != nil {
 
 ## Leverage Stanza
 
-### Inbound Decorators
+### Inbound Guards
 
-Stanza inbound decorators intercept a service's incoming traffic to guard that service from overload.
-Services with inbound decorators can be configured to shed load in the Stanza UI based on multiple factors,
+Stanza inbound guards intercept a service's incoming traffic to guard that service from overload.
+Services with inbound guards can be configured to shed load in the Stanza UI based on multiple factors,
 including requests per second, CPU saturation, and memory utilization.
 
-To use an inbound decorator, register it as middleware using one of the Stanza adapters. For example, if you
+To use an inbound guard, register it as middleware using one of the Stanza adapters. For example, if you
 are using [Fiber](https://gofiber.io/), you would use the fiberstanza middleware:
 
 ```go
@@ -70,18 +70,18 @@ are using [Fiber](https://gofiber.io/), you would use the fiberstanza middleware
 app := fiber.New()
 
 if stanzaInitErr == nil {
-	app.Use("/", fiberstanza.Middleware("RootDecorator"))
-	app.Use("/login", fiberstanza.Middleware("LoginDecorator"))
+	app.Use("/", fiberstanza.Middleware("RootGuard"))
+	app.Use("/login", fiberstanza.Middleware("LoginGuard"))
 }
 ```
 
-### Outbound Decorators
+### Outbound Guards
 
-Outbound decorators guard another service from overload at the calling point of your service. They are useful for
-managing requests to services you do not control the code for. For example, outbound decorators are a great way to
+Outbound guards guard another service from overload at the calling point of your service. They are useful for
+managing requests to services you do not control the code for. For example, outbound guards are a great way to
 manage rate limiting from third parties.
 
-To use an outbound decorator, wrap the call using the Stanza API provided functions. If you have already imported an
+To use an outbound guard, wrap the call using the Stanza API provided functions. If you have already imported an
 adapter (fiberstanza for example), you will have many outbound wrappers available to use (HttpGet, HttpPost, etc).
 
 The following example uses Stanza to call ZenQuotes. Because it is passing the optional Stanza feature, it can

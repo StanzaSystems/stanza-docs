@@ -1,0 +1,27 @@
+# Configuring Guards
+
+Guards are Stanza's most powerful concept. Guards can decorate a code path with various behaviors to improve reliability. 
+Guards also collect telemetry about the performance of the code path.
+
+The following is a simple guard configuration:
+
+```json
+{
+  "quotaConfig": {
+    "burst": 6,
+    "enabled": true,
+    "refillRate": 5,
+    "strictSynchronous": false
+  }
+}
+```
+
+`quotaConfig` - A configuration object to enable quota management in a guard.
+
+`enabled` - Indicates whether quota management is currently on for this guard.
+
+`refillRate` - The number of requests per second that the guard should allow.
+
+`burst` - Your Guard users will be able to temporarily make this many requests, but they will be held on average to Rate over a longer time window. Burst must be greater than or equal to Rate.
+
+`strictSynchronous` - If this is true then we will never locally cache tokens, every request will go through stanza. Use this if you may see very rapid and unpredictable spikes in traffic (ramping up faster than a period of 2 seconds), and if it is critical that you should never exceed your configured rates, even briefly.

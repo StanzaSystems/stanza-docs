@@ -41,9 +41,9 @@ require('./initStanza')
 */
 ```
 
-## Wrapping code with a decorator
+## Wrapping code with a guard
 
-One of the main features of Stanza is the ability to guard the execution of your code by wrapping it with a decorator. If you want to learn more about what decorators are please read our [glossary](/glossary) page first.
+One of the main features of Stanza is the ability to guard the execution of your code by wrapping it with a guard. If you want to learn more about what guards are please read our [glossary](/glossary) page first.
 
 Let's imaging the following block of code:
 
@@ -53,25 +53,25 @@ await aService.doSomething()
 console.log('Service returned successfully')
 ```
 
-If we want to guard this block of code with a Stanza decorator we can first [create and configure a decorator in the stanza UI](/configuration/decorators). 
+If we want to guard this block of code with a Stanza guard we can first [create and configure a guard in the stanza UI](/configuration/guards). 
 
 Then we can define it in code:
 
 ```js
-const myDecorator = stanzaDecorator({ decorator: 'my-decorator' })
+const myGuard = stanzaGuard({ guard: 'my-guard' })
 ```
 
-And then we can wrap the code with this decorator:
+And then we can wrap the code with this guard:
 
 ```js
-await myDecorator.call(async () => {
+await myGuard.call(async () => {
   console.log('About to call a service')
   await aService.doSomething()
   console.log('Service returned successfully')
 })
 ```
 
-Now the code wrapped with a decorator will only get executed if all checks enforced by a decorator (requesting for quota, validating the incoming token etc.) are satisfied. Otherwise, it will reject with a StanzaError describing the cause of the execution being blocked.
+Now the code wrapped with a guard will only get executed if all checks enforced by a guard (requesting for quota, validating the incoming token etc.) are satisfied. Otherwise, it will reject with a StanzaError describing the cause of the execution being blocked.
 
 As an alternative we can wrap an existing function, let's call it `myFunction`, and wrap it to be reused later.
 
@@ -83,17 +83,17 @@ async function myFunction() {
 }
 ```
 
-In order to wrap it we can use the same decorator instance as above, but use a `bind` method instead:
+In order to wrap it we can use the same guard instance as above, but use a `bind` method instead:
 
 ```js
-const myGuardedFunction = myDecorator.bind(myFunction)
+const myGuardedFunction = myGuard.bind(myFunction)
 ```
 
 In this example we don't call the `myFunction` immediately but wrap it with another function that can be reused and called later
 
 ```js
 /*
-  This will first verify all the conditions enforced by a decorator and only execute `myFunction` if they are satisfied.
+  This will first verify all the conditions enforced by a guard and only execute `myFunction` if they are satisfied.
  */
 myGuardedFunction()
 ```

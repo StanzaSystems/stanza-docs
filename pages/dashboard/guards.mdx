@@ -1,0 +1,21 @@
+
+# Creating Guards
+
+1. From the left hand side menu, select "Guards". 
+1. Click on ![](/addguard.png)
+1. Add a unique Name. 
+1. Select the correct [Environment](/glossary#environment), [Project](/glossary#project), [Traffic Type](/glossary#guard) and click Save.
+![](/createguard.png)
+1. You'll be redirected to your Guard's details page. 
+ 
+# Configuring Guards
+
+## Quota Configurations
+Guard behavior is configured using the Quota Configuration. By default, your guard was created with an empty traffic configuration that you can modify to meet your needs.
+There are many quota configuration options - read the [configuration section for more information](/configuration/guards.mdx)
+
+## Optional Configurations
+Guards have two optional configurations that are for your records:
+1. [Traffic Type](/glossary#guard)
+2. Guarded Service - the service that the guard guards (if this is an 'outbound' traffic guard, it will not be the same as the service the guard is in.)
+ 

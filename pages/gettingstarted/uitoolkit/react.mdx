@@ -4,132 +4,161 @@ Stanza has a React library that provides a react context to use in React applica
 
 Stanza supports all evergreen browsers.
 
-## Install the Browser library
+You can follow the next steps in your current project or create a sample React app with the following command:
+
 ```shell
-npm install @getstanza/react
+npm create vite@latest stanza-test-app -- --template react-ts
+cd ./stanza-test-app
+```
+
+## Install the Stanza's core and React libraries
+```shell
+npm install @getstanza/core @getstanza/react
 ```
 
 ## Getting Started In React
 
-Create a [stanzaConfig.ts](../javascript/stanzaconfig) using the Stanza UI to get your API key.
+Create a [src/stanzaConfig.ts](../javascript/stanzaconfig) using the [Stanza UI](https://ui.stanzasys.co) to get your API key.
 
 ```ts
 import type { StanzaCoreConfig } from '@getstanza/core'
 
 export const config: StanzaCoreConfig = {
-  url: 'https://hub.dev.getstanza.dev', // the Stanza service url
-  environment: 'local', // the environment you want to pull configruations for
-  stanzaApiKey: 'valid-api-key', // an API key issued in the Stanza UI
+  url: 'https://hub.stanzasys.co/', // the Stanza service url
+  environment: 'local', // the environment you want to pull configurations for
+  stanzaApiKey: '<your-stanza-api-key>', // an API key issued in the Stanza UI
   refreshSeconds: 3, // the refresh rate of the feature statuses
   contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
     {
       name: 'main',
-      features: ['featured', 'search', 'checkout']
-    },
-    {
-      name: 'details',
-      features: ['checkout']
+      features: ['search']
     }
   ],
 }
 ```
 
-The URL and API key can be found in the Stanza UI.
+The API key can be found in the Stanza UI.
 
 ### Choosing Features and Contexts
 
-Choosing features and contexts can be a little bit tricky! The things to keep in mind are:
+For a simple app scenario you can configure one context per page in the application ie in a simple shop app:
+* 'main' for the main page
+* 'searchResult' for the page displaying search result
+* 'itemDetails' for the details page of the selected item
+
+Each context can consist of multiple feature ie:
+* `main` context (page) can contain:
+  * search bar - we can associate that with the `search` feature
+  * checkout button - we can associate that with the `checkout` feature
+  * featured items section - we can associate that with the `featured` feature
+
+As your application grows or you want to have more fine grained control over the app you can configure more features in your app configuration. To make yourself successful here are the couple of things to keep in mind:
 1. Features can span multiple requests, and multiple UI components. As a developer, you will have to decide what you want to do at each location you use a feature.
 2. When Features are disabled, Stanza stops requests related to that feature from sending. This is good for the infra, but it means if you don't handle this in some way in the UI users will have a very weird time.
-3. You don't have to get a feature label on everything! Start with your most important features, and your least important ones. Other features will default to a medium prioirty.
+3. You don't have to get a feature label on everything! Start with your most important features, and your least important ones. Other features will default to a medium priority.
 3. A context is a group of features found in one page - Stanza will grab them all at once and refresh the cache simultaneously.
 
 
 ## Using Stanza in React
 
 ### Initialize Stanza
-Initialize stanza very early in your application lifecycle, probably before `ReactDOM.createRoot()`. Then create a `StanzaProvider` that wraps your app.
+Initialize stanza very early in your application lifecycle, before `ReactDOM.createRoot()`. Then create a `StanzaProvider` that wraps your app.
 
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createStanzaInstance, StanzaProvider } from '@getstanza/react'
+import App from './App.tsx'
+import './index.css'
+import { StanzaProvider, createStanzaInstance } from '@getstanza/react'
+import { config } from './stanzaConfig.ts'
 
 const stanzaInstance = createStanzaInstance(config)
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <StanzaProvider instance={stanzaInstance}>
-      <App/>
+      <App />
     </StanzaProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 )
 ```
 
-### Use Stanza Component to Wrap Features
+### Use Stanza Components to Wrap Features
 
-`StanzaComponent` is a fast wrapper for features that automatically removes them from the UI and/or adds error messages under stress.
-The following code leverages StanzaComponent to wrap a "featured products" section of an ecommerce page.
+`WithStanzaContextName` is a wrapper component that defines the Stanza context that is applicable to a certain part of the application.
+
+`WithStanzaFeature` is a wrapper component that watches the state of the specified feature and removes the wrapped part from the UI and/or renders a fallback component under stress.
+The following code leverages WithStanzaFeature to wrap a the search section of the application. We also wrap the whole app with `main` context using WithStanzaContextName:
 
 ```js
-import React from 'react'
-import products from '../data/products'
-import Products from './Products'
-import StanzaComponent from './StanzaComponent'
+import { WithStanzaContextName, WithStanzaFeature } from "@getstanza/react";
 
-const FeaturedProducts = () => {
-  const featuredProducts = products.filter(({ tags }) => tags.includes('featured'))
-  return <StanzaComponent contextName="main" featureName="featured" removedFallback={({ message }) => (
-    <p style={{ color: 'red' }}>{message}</p>
-  )}>
-    <h2 className="section-title">Products on Sale Today!</h2>
-    <Products products={featuredProducts}/>
-  </StanzaComponent>
+function App() {
+  return (
+    <WithStanzaContextName name="main">
+      <WithStanzaFeature
+        name="search"
+        fallback={({ message }) => (
+          <p style={{ color: "red" }}>{message}</p>
+        )}
+      >
+        <label htmlFor="search">Search</label>
+        <input name="search" />
+      </WithStanzaFeature>
+    </WithStanzaContextName>
+  );
 }
-
-export default FeaturedProducts
 ```
+
+Now you can go to the [Stanza UI](https://ui.stanzasys.co/features/) features section and manually set the state of a `search` feature to "Disable". After saving the changes the search bar should disappear and be replaced with an error message
 
 ### Use Stanza context directly
 
-For more direct control, you can use `StanzaContext` directly. The Stanza context gives you actions codes and messages related to features you defined in your configuration.
-Here it is used in an ecommerce app to remove featured products under load, and display relevant error messages in search.
+For more direct control, you can access `StanzaContext` directly by using `useStanzaContext` hook. The Stanza context gives you statuses and messages related to features you defined in your configuration. You can use it to have finer control over loading of your data eg. pausing refetching of your data when a given feature is disabled.
+Below, you can find an example of disabling React Query's automatic refetching. It will still show cached data if available and you can display additional information if there is no data available.
 
 ```js
-import { useStanzaContext } from '@getstanza/react'
-import { ActionCode } from '@getstanza/browser'
-import Layout from '../components/Layout'
-import Cart from '../components/Cart'
-import CartSummary from '../components/CartSummary'
-import Products from '../components/Products'
+import { StanzaBrowser } from "@getstanza/browser";
+import { useStanzaContext } from "@getstanza/react";
+import { useQuery } from "@tanstack/react-query";
 
-
-const MainPage = () => {
-  const stanzaContext = useStanzaContext('main')
+function MainPage() {
+  const ctx = useStanzaContext("main");
+  const featuredFeature = ctx?.features.featured;
+  const isFeaturedDisabled = featuredFeature?.disabled === true;
+  const { data, status } = useQuery({
+    queryKey: ["featured"],
+    enabled: !isFeaturedDisabled,
+    queryFn: async () => {
+      // This is mocked version of the fetching function. 
+      // Your fetching logic would go here
+      await new Promise((resolve) => {
+        setTimeout(resolve, 2000);
+      });
+      const ctx = StanzaBrowser.getContextStale("main");
+      const isFeaturedDisabled = ctx.features.featured.disabled === true;
+      if (isFeaturedDisabled) throw new Error("Can't load featured items");
+      return Promise.resolve([
+        { name: "Teddy Bear" },
+        { name: "Batman Action Figure" },
+        { name: "5x5 Speed Cube" },
+      ]);
+    },
+  });
 
   return (
-    <Layout title="Stanza Swag Shop">
-      <div className="page-container">
-        <Cart>
-          <CartSummary />
-          <form style={{ display: 'flex' }}>
-            <input style={{ flexBasis: '75%' }} type='text' id='searchProducts' placeholder={stanzaContext?.features.search.message}></input> // placeholder search text swap
-          <button style={{ flexBasis: '25%' }}>Search</button>
-          </form>
-          {stanzaContext?.features.featured.code !== ActionCode.DISABLED_REMOVE.valueOf() && ( // show featured products if not removed
-            <>
-            <h2>Cool New Swag!</h2>
-            <Products />
-            </>
-          ) }
-          {stanzaContext?.features.featured.message} // display status message for featured products
-        </Cart>
-      </div>
-    </Layout>
-  )
+    <div>
+      <h2>Featured items</h2>
+      {status !== "success" && isFeaturedDisabled && (
+        <div>We could not load featured items right now</div>
+      )}
+      {data?.map((item) => (
+        <div key={item.name}>{item.name}</div>
+      ))}
+    </div>
+  );
 }
 
 export default MainPage
-
 
 ```

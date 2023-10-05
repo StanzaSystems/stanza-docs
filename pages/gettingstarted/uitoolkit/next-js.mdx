@@ -17,7 +17,48 @@ Stanza's NextJS library is a set of Next specific utilities but it is based on t
 
 ## Initialize Stanza
 
-Initialize stanza very early in your application lifecycle. In Next you can put the Stanza's initialization logic inside the `pages/_app.tsx` custom app script ([docs](https://nextjs.org/docs/advanced-features/custom-app))
+Initialize stanza very early in your application lifecycle. 
+
+If you are using the [App Router](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) then we suggest putting the initialization logic in the [root layout](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required). However because we need to initialize Stanza on the client side you need to create a wrapper client component (eg. `components/WithStanza.tsx`)
+
+```ts
+'use client'
+import { createStanzaInstance, StanzaProvider } from '@getstanza/react'
+import React from 'react'
+import { config } from '../stanzaConfig'
+
+const stanzaInstance = createStanzaInstance(config)
+
+const WithStanza: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return <StanzaProvider instance={stanzaInstance}>
+    {children}
+  </StanzaProvider>
+}
+
+export default WithStanza
+```
+
+After creating the `WithStanza` component we can use it inside of the root layout -> `app/layout.tsx`
+
+```ts
+import WithStanza from '../components/WithStanza'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <WithStanza>{ children }</WithStanza>
+      </body>
+    </html>
+  )
+}
+```
+
+If you are using [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts) you can put the Stanza's initialization logic inside the `pages/_app.tsx` custom app script ([docs](https://nextjs.org/docs/advanced-features/custom-app))
 
 ```ts
 import { createStanzaInstance, StanzaProvider } from '@getstanza/react'
@@ -63,35 +104,3 @@ const config: StanzaCoreConfig = {
   }
 }
 ```
-
-## Pre-rendering with Stanza (coming soon)
-
-In order to make sure that enablement number is available for during server side rendering a [Next middleware](https://nextjs.org/docs/advanced-features/middleware) together with [getServerSideProps](https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props). Stanza Next integration provides:
-* `middleware` - a function that allows intercepting all incoming requests and make sure that `enablementNumber` is generated before we reach the page.
-* `getEnablementNumber` - a function that will read the enablement number from the session generated in the middleware
-
-To put it all together we need to create a `middleware.ts` file at the same level as the `pages` directory:
-
-```ts
-import { stanzaSession } from '@getstanza/next'
-
-export default stanzaSession().middleware
-```
-
-and then use can retrieve the enablement number in `getServerSideProps`:
-
-```ts
-const { getEnablementNumber } = stanzaSession()
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const enablementNumber = await getEnablementNumber(context.req)
-  return {
-    props: {
-      /* other server side props */
-      enablementNumber
-    }
-  }
-}
-```
-
-

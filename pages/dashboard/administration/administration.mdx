@@ -1,0 +1,6 @@
+
+# Introduction
+The administration section has a few critical things you need. In there, you can define projects, environments and keys.
+- [Projects](https://docs.dev.getstanza.dev/dashboard/administration/projects) are a grouping for you to use to keep related things together. For instance a team might want to group together all of a service's features and guards for easy finding.
+- [Environments](https://docs.dev.getstanza.dev/dashboard/administration/environments) isolate state in Stanza. For instance, most test environments have far lower quotas than production. It is useful to make each individual developer their own environment, so that they can test scenarios like being rate limited and feature failures on their local machine in isolation.
+- [Keys](https://docs.dev.getstanza.dev/dashboard/administration/keys) are provisioned per-environment and have two types - Browser and API. Browser keys are public and intended to be shipped to the client to support graceful degredation scenarios. API keys are not public and intended for use in backend services. Some features of Stanza only accept API keys, as they have abuse potential and are not intended for public consumption.

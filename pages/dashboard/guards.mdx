@@ -1,4 +1,9 @@
 
+# Introduction
+Guards wrap parts of your code and guard it from overload, ensuring high-priority requests are always served, and slowing or dropping lower priority requests if needed. Guard quotas can be changed in real time if needed (for instance, if you lose a database replica or cloud region and can only service half of your usual traffic).
+Good uses for guards are wrapping outgoing requests to resource constrained services like ChatGPT, Postgres, MySQL or Redis, to ensure they are not overloaded and prevent abuse.
+You can also use guards as a top-level middleware to guard a service from overload by incoming requests. This can be useful to protect a service from large auto-scaling bills, or DDOS-ing Yourself bugs.
+
 # Creating Guards
 
 1. From the left hand side menu, select "Guards". 

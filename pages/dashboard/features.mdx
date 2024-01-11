@@ -1,4 +1,8 @@
 
+# Introduction
+Defining Stanza features and assigning them a priority enables two-way communication between your infrastructure and your front end. When you label front end components with a Stanza feature, the UI toolkit can do smart things like disabling or removing low priority features to keep high priority ones working under load. When a request has a feature label, it is treated in a prioritized way by Stanza guards - so higher priority requests get preference for speed and serviceability.
+Even if you don't want to get that fancy, you can embed features in your UI and push custom messages to customers, directly in the relevant UI component!
+
 # Creating Features
 
 Features are capabilities of software, and their constituent traffic flows through backend services - like 'product search', 'checkout' or 'settings'

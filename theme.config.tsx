@@ -1,6 +1,11 @@
 import { DocsThemeConfig } from "nextra-theme-docs";
 
 const config: DocsThemeConfig = {
+  useNextSeoProps() {
+    return {
+      titleTemplate: '%s'
+    }
+  },
   logo: <span>Stanza Docs</span>,
   project: {
     link: "https://github.com/StanzaSystems",

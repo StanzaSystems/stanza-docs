@@ -16,9 +16,9 @@ Create a [Stanza Config](../javascript/stanzaconfig) using the Stanza UI to get 
 
 ```ts
 const config: StanzaCoreConfig = {
-  url: 'https://hub.dev.getstanza.dev', // the Stanza service url
+  url: 'https://hub.stanzasys.co', // the Stanza service url
   environment: 'local', // the environment you want to pull configurations for
-  stanzaApiKey: 'valid-api-key', // an API key issued in the Stanza UI
+  stanzaApiKey: '<your_api_key>', // an API key issued in the Stanza UI
   refreshSeconds: 3, // the refresh rate of the feature statuses
   contextConfigs: [ // groups of features that load together - most likely, your app's pages or routes
     {

@@ -1,6 +1,13 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
+  '@next/third-parties':
+    specifier: ^14.1.0
+    version: 14.1.0(next@13.4.7)(react@18.2.0)
   next:
     specifier: ^13.4.7
     version: 13.4.7(react-dom@18.2.0)(react@18.2.0)
@@ -284,6 +291,17 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@next/third-parties@14.1.0(next@13.4.7)(react@18.2.0):
+    resolution: {integrity: sha512-f55SdvQ1WWxi4mb5QqtYQh5wRzbm1XaeP7s39DPn4ks3re+n9VlFccbMxBRHqkE62zAyIKmvkUB2cByT/gugGA==}
+    peerDependencies:
+      next: ^13.0.0 || ^14.0.0
+      react: ^18.2.0
+    dependencies:
+      next: 13.4.7(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      third-party-capital: 1.0.20
+    dev: false
 
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
@@ -2389,6 +2407,10 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       has-flag: 2.0.0
+    dev: false
+
+  /third-party-capital@1.0.20:
+    resolution: {integrity: sha512-oB7yIimd8SuGptespDAZnNkzIz+NWaJCu2RMsbs4Wmp9zSDUM8Nhi3s2OOcqYuv3mN4hitXc8DVx+LyUmbUDiA==}
     dev: false
 
   /title@3.5.3:

@@ -1,0 +1,163 @@
+# Getting Started with Python
+
+Stanza provides a Python SDK with adapters for easy integration with popular libraries. This SDK
+is open source and available on GitHub: https://github.com/StanzaSystems/sdk-python
+
+## Install the SDK
+
+The Stanza Python SDK is available at PyPi as [getstanza](https://pypi.org/project/getstanza/).
+You can install the latest version with [pip](https://pypi.org/project/pip/):
+
+```shell
+pip install getstanza
+```
+
+The same will also work for any Python package manager which supports PyPi, such as
+[poetry](https://python-poetry.org):
+
+```shell
+poetry add getstanza
+```
+
+## Initialize Stanza
+
+The Stanza Python SDK provides adapters (currently supporting FastAPI,
+Requests, and SQS) to ease integration, but even without an adapter you can
+initialize Stanza to "[Guard](/glossary#guard)" any generic resource:
+
+```python
+from getstanza.client import StanzaClient
+from getstanza.configuration import StanzaConfiguration
+ 
+# Init Stanza fault tolerance library
+try:
+    client = StanzaClient(
+        StanzaConfiguration(
+            api_key="YOUR-API-KEY-HERE",  # or via STANZA_API_KEY environment variable
+            service_name=NAME,            # or via STANZA_SERVICE_NAME environment variable
+            service_release=RELEASE,      # or via STANZA_SERVICE_RELEASE environment variable
+            environment=ENV,              # or via STANZA_ENVIRONMENT environment variable
+        )
+    )
+except ValueError as exc:
+    logging.exception(exc)
+    sys.exit(1)
+```
+
+### Adapters
+
+#### FastAPI
+
+For a [FastAPI](https://fastapi.tiangolo.com) server use the
+`getstanza_fastapi` adapter:
+
+```python
+from getstanza_fastapi.fastapi_client import StanzaFastAPIClient
+from getstanza.configuration import StanzaConfiguration
+
+# Init Stanza fault tolerance library
+try:
+    client = StanzaFastAPIClient(
+        StanzaConfiguration(
+            api_key="YOUR-API-KEY-HERE",  # or via STANZA_API_KEY environment variable
+            service_name=NAME,            # or via STANZA_SERVICE_NAME environment variable
+            service_release=RELEASE,      # or via STANZA_SERVICE_RELEASE environment variable
+            environment=ENV,              # or via STANZA_ENVIRONMENT environment variable
+        )
+    )
+except ValueError as exc:
+    logging.exception(exc)
+    sys.exit(1)
+```
+
+Example working FastAPI server with Stanza Python SDK:
+https://github.com/StanzaSystems/sdk-python/tree/main/samples/fastapi 
+
+#### SQS
+
+For a service guarding outbound [SQS](https://aws.amazon.com/sqs/) use the
+`getstanza_sqs` adapter:
+
+```python
+from getstanza_sqs import StanzaSQSClient
+from getstanza.configuration import StanzaConfiguration
+
+# Init Stanza fault tolerance library
+try:
+    client = StanzaSQSClient(
+        StanzaConfiguration(
+            api_key="YOUR-API-KEY-HERE",  # or via STANZA_API_KEY environment variable
+            service_name=NAME,            # or via STANZA_SERVICE_NAME environment variable
+            service_release=RELEASE,      # or via STANZA_SERVICE_RELEASE environment variable
+            environment=ENV,              # or via STANZA_ENVIRONMENT environment variable
+        )
+    )
+except ValueError as exc:
+    logging.exception(exc)
+    sys.exit(1)
+```
+
+Example services with Stanza Python SDK guarding SQS:
+https://github.com/StanzaSystems/sdk-python/tree/main/samples/sqs 
+
+
+## Leverage Stanza
+
+Guards are Stanza's most powerful concept. Guards can wrap any arbitrary code
+path with various behaviors to improve reliability. Guards also collect
+telemetry about the performance of the wrapped code path which is visible to
+you in the Stanza Dashboard. See [Dashboard > Guards](/dashboard/guards) for
+instructions on how to create a new Stanza Guard.
+
+### Inbound Guards
+
+Stanza Inbound Guards intercept a service's incoming (ingress) traffic in order
+to protect the service from overload.
+
+The simplest way to use an Inbound Guard is with one of our adapters. For
+example, if you are using FastAPI, you would [initialize with the
+`getstanza_fastapi` adapter](#fastapi) and decorate a path with a Stanza Guard:
+
+```python
+app = FastAPI(title=NAME, version=RELEASE, debug=DEBUG)
+
+@app.get("/something")
+@client.stanza_guard("GuardName")
+async def something():
+    # ✅ Stanza Guard has *allowed* this workflow, business logic goes here.
+```
+
+### Outbound Guards
+
+Stanza Outbound Guards intercept a services outbound (egress) traffic in order
+to protect *that* service from overload.
+
+The simplest way to use an Outbound Guard is with one of our adapters. For
+example, if you are using AWS SQS you would [initialize with the
+`getstanza_sqs` adapter](#sqs) and decorate a path with a Stanza Guard:
+
+```python
+sqs = boto3.resource("SomeResource")
+queue = client.stanza_guard(
+    sqs.get_queue_by_name(QueueName="QueueName"), "GuardName"
+)
+```
+
+To guard outbound HTTP with Requests use the `getstanza_requests` adapter:
+
+```python
+from getstanza_requests import StanzaSession
+
+try:
+    with StanzaSession("GuardName") as session:
+        resp = session.get("https://some.url/path", timeout=10)
+```
+
+## Debug Mode
+
+The Stanza Python SDK has a debug mode that can be enabled to get additional
+output. Set an environment variable:
+
+```shell
+STANZA_DEBUG=true
+```

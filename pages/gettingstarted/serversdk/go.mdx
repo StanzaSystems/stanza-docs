@@ -12,8 +12,20 @@ $ go get github.com/StanzaSystems/sdk-go
 
 ### Import the necessary dependencies
 
-For example if you are using [Fiber](https://gofiber.io/) and [Zap](https://github.com/uber-go/zap), you can use
-the fiberstanza adapter:
+You can initialize the Stanza Go SDK in your application by providing the approporiate imports for your use case.
+The simplest case imports the main library like this:
+```go
+import (
+	"context"
+	"log"
+
+	"github.com/StanzaSystems/sdk-go/stanza"
+)
+```
+
+You can also use one of the provided adaptors for whatever framework you're working with. For example if you are using 
+[Fiber](https://gofiber.io/) and [Zap](https://github.com/uber-go/zap), you can use the fiberstanza adapter. If there's
+an adapter you'd like to see that we don't have, you can submit a PR to add it, or send us feedback requesting one.
 
 ```go
 import (
@@ -41,16 +53,16 @@ const (
 // Create a context before initialzing Stanza (or re-use an existing one)
 ctx := context.Background()
 
-shutdown, stanzaInitErr := fiberstanza.Init(ctx,
-	fiberstanza.Client{
-		APIKey:      "c6af1e6b-78f4-40c1-9428-2c890dcfdd7f", // API key from the Stanza UI
+shutdown, stanzaInitErr := stanza.Init(ctx,
+	stanza.Client{
+		APIKey:      "<your Type API Key>", // API key from the Stanza UI
 		Name:        name,        // the name of your service
 		Release:     release,     // the release/version of your service
 		Environment: environment, // the environment of your service 
 	})
 defer shutdown()
 if stanzaInitErr != nil {
-	logger.Error("stanza.init", zap.Error(stanzaInitErr))
+	logger.Error("stanza.init", log.Error(stanzaInitErr))
 }
 ```
 
@@ -84,20 +96,83 @@ manage rate limiting from third parties.
 To use an outbound guard, wrap the call using the Stanza API provided functions. If you have already imported an
 adapter (fiberstanza for example), you will have many outbound wrappers available to use (HttpGet, HttpPost, etc).
 
-The following example uses Stanza to call ZenQuotes. Because it is passing the optional Stanza feature, it can
-prioritize requests for higher priority features when approaching rate limits.
+To create and configure a guard with a feature option in Stanza, follow these steps:
+
+1. Define the feature:
+   First, define a variable for the feature you want to guard. For example:
+   ```go
+   var featureGetCurrencies = "ChangeCurrency"
+   ```
+
+2. Create the guard:
+   Use the `stanza.Guard()` function to create a guard. This function takes three parameters:
+   - The context (`ctx`)
+   - A guard name (a string identifier for the guard)
+   - Guard options (`stanza.GuardOpt`)
+
+   Example:
+   ```go
+   stz := stanza.Guard(ctx, guardName, stanza.GuardOpt{
+       Feature: &featureGetCurrencies,
+   })
+   ```
+
+3. Handle guard errors:
+   Check if the guard creation resulted in an error:
+   ```go
+   if stz.Error() != nil {
+       return nil, stz.Error()
+   }
+   ```
+
+4. Check if the guard is blocking:
+   Use the `Blocked()` method to determine if the guard is blocking the operation:
+   ```go
+   if stz.Blocked() {
+       log.Debug("Operation blocked by Stanza")
+       stz.End(stz.Failure)
+       return nil, errors.New("Operation blocked by Stanza")
+   }
+   ```
+
+5. Proceed with the guarded operation:
+   If the guard is not blocking, proceed with your operation.
+
+6. End the guard:
+   After the operation, end the guard by calling the `End()` method with the appropriate status:
+   ```go
+   stz.End(stz.Success) // For successful operations
+   // or
+   stz.End(stz.Failure) // For failed operations
+   ```
+
+Here's a complete example:
 
 ```go
-// resp, err := http.Get("https://zenquotes.io/api/random") // before Stanza looks like this
+var featureGetCurrencies = "ChangeCurrency"
 
-resp, err := fiberstanza.HttpGet("https://zenquotes.io/api/random",
-				fiberstanza.Decorate("ZenQuotes", fiberstanza.GetFeatureFromContext(c)))
-if err != nil {
-	// Consider how you want to handle this error! This could be an error from ZenQuotes or a
-	// "429 Too Many Requests" from Stanza. For example, instead of returning the error directly,
-	// maybe display a user friendly "Something went wrong!" type of error page. Or if it's an
-	// optional component of a larger page, just skip rendering it without returning an error.
-	return err
+func (fe *frontendServer) getCurrencies(ctx context.Context) ([]string, error) {
+    log := ctx.Value(ctxKeyLog{}).(logrus.FieldLogger)
+    log.Debug("getCurrencies called")
+
+    stz := stanza.Guard(ctx, "getCurrenciesGuard", stanza.GuardOpt{
+        Feature: &featureGetCurrencies,
+    })
+    if stz.Error() != nil {
+        return nil, stz.Error()
+    }
+
+    if stz.Blocked() {
+        log.Debug("getCurrencies call blocked by Stanza")
+        stz.End(stz.Failure)
+        return nil, errors.New("getCurrencies call blocked by Stanza")
+    }
+
+    // Perform the guarded operation here
+
+    stz.End(stz.Success)
+    return result, nil
 }
-defer resp.Body.Close()
 ```
+
+This pattern allows you to easily integrate Stanza guards into your application, controlling access to specific features and managing the flow of your operations based on Stanza's decisions.
